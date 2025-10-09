@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wanderlust</title>
+  </head>
+  <body>
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WanderLust</title>
+      </head>
+      <body>
+        <h1>Edit your Listing</h1>
+        <form method="POST" action="/listings/<%=listing._id%>?_method=PUT ">
+          <input
+            name="listing[title]"
+            placeholder="enter title"
+            value="<%=listing.title%>"
+            type="text"
+          />
+          <br />
+          <br />
+          <textarea name="listing[description]">
+<%=listing.description%></textarea
+          >
+
+          <br />
+          <br />
+          <input
+            name="listing[image]"
+            placeholder="enter image"
+            type="text"
+            value="<%=listing.image%>"
+          />
+          <br />
+          <br />
+          <input
+            name="listing[price]"
+            placeholder="enter price"
+            type="number"
+            value="<%=listing.price%>"
+          />
+          <br />
+          <br />
+          <input
+            name="listing[country]"
+            placeholder="enter country"
+            type="text"
+            value="<%=listing.country%>"
+          />
+          <br />
+          <br />
+          <input
+            name="listing[location]"
+            placeholder="enter location"
+            type="text"
+            value="<%=listing.location%>"
+          />
+          <br />
+          <br />
+          <button>edit</button>
+        </form>
+      </body>
+    </html>
+  </body>
+</html>
