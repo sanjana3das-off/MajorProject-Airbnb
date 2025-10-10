@@ -99,3 +99,8 @@ app.delete("/listings/:id", async (req, res) => {
 
   res.redirect(`/listings/`);
 });
+
+app.get("/debug", async (req, res) => {
+  const listings = await Listing.find({});
+  res.send(listings);
+});
