@@ -12,6 +12,10 @@ app.use(express.urlencoded({ extended: true })); //all the data coming in the re
 const methodOverride = require("method-override");
 app.use(methodOverride("_method"));
 
+const ejsMate = require("ejs-mate");
+app.engine("ejs", ejsMate);
+
+app.use(express.static(path.join(__dirname, "/public")));
 app.listen(8080, () => {
   console.log("app is listening on port 8080");
 });
