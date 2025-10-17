@@ -8,6 +8,8 @@ const path = require("path"); //next create  a foldername views
 const { log } = require("console");
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+app.use(express.json()); //  Add this line
 app.use(express.urlencoded({ extended: true })); //all the data coming in the request is getting parsed
 
 const methodOverride = require("method-override");
@@ -16,6 +18,9 @@ app.use(methodOverride("_method"));
 const ejsMate = require("ejs-mate");
 app.engine("ejs", ejsMate);
 
+const { listingSchema } = require("./schema.js");
+
+//**************************************************************************** */
 app.use(express.static(path.join(__dirname, "/public")));
 app.listen(8080, () => {
   console.log("app is listening on port 8080");
@@ -55,6 +60,24 @@ main()
 //   res.send("succesful testing");
 // });
 
+const validateListing = (req, res, next) => {
+  let { error } = listingSchema.validate(req.body);
+
+  if (error) {
+    // `error` is the object returned by Joi when validation fails
+    // It contains details about each validation failure in an array called `details`
+
+    // Map over each element in the error.details array
+    // `el` represents one validation error object
+    let errMsg = error.details
+      .map((el) => el.message) // extract the human-readable message from each error
+      .join(","); // join all messages into a single string, separated by commas
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
+};
+
 //index route
 app.get(
   "/listings",
@@ -81,12 +104,8 @@ app.get(
 // create route
 app.post(
   "/listings",
+  validateListing,
   wrapAsync(async (req, res, next) => {
-    if (!req.body.listing) {
-      throw new ExpressError(400, "Send valid data for Title");
-    }
-    // let { title, description, image, price, country, location } = req.body;
-
     const newListing = new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings");
@@ -105,6 +124,7 @@ app.get(
 //Update route
 app.put(
   "/listings/:id",
+  validateListing,
   wrapAsync(async (req, res, next) => {
     if (!req.body.listing) {
       throw new ExpressError(400, "Send valid data for Title");
