@@ -137,7 +137,8 @@ app.use((err, req, res, next) => {
   //first wee will destrut from error messgae
   let { statusCode = 500, message = "Something went Wrong " } = err; //the above error wil be catch here
 
-  res.status(statusCode).send(message); // and it will send the response
+  // res.status(statusCode).send(message); // and it will send the response
+  res.status(statusCode).render("error.ejs", { message });
 });
 app.get("/debug", async (req, res) => {
   const listings = await Listing.find({});
