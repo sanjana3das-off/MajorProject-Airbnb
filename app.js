@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
-
+const Review = require("./models/review.js");
 //index route-setting ejs
 const path = require("path"); //next create  a foldername views
 const { log } = require("console");
@@ -146,6 +146,20 @@ app.delete(
     res.redirect(`/listings/`);
   })
 );
+
+//Review model Routes
+//post route
+app.post("/listings/:id/reviews", async (req, res) => {
+  //why async because we are going to data on database which is an asychronous process
+  let listing = await Listing.findById(req.params.id);
+  let newReview = new Review(req.body.review);
+  listing.reviews.push(newReview);
+
+  await newReview.save();
+  await listing.save();
+
+  res.redirect(`/listings/${listing._id}`);
+});
 
 //sending standard response for * match all the routes above and if it didnot match then send response of page not found
 app.use((req, res, next) => {
