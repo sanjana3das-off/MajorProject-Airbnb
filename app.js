@@ -18,7 +18,7 @@ app.use(methodOverride("_method"));
 const ejsMate = require("ejs-mate");
 app.engine("ejs", ejsMate);
 
-const { listingSchema } = require("./schema.js");
+const { listingSchema, reviewSchema } = require("./schema.js");
 
 //**************************************************************************** */
 app.use(express.static(path.join(__dirname, "/public")));
@@ -60,6 +60,7 @@ main()
 //   res.send("succesful testing");
 // });
 
+//step3-Server side validation
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
 
@@ -78,6 +79,15 @@ const validateListing = (req, res, next) => {
   }
 };
 
+const validateSchema = (req, res, next) => {
+  let { error } = reviewSchema.validate(req.body);
+  if (error) {
+    let errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
+};
 //index route
 app.get(
   "/listings",
@@ -149,17 +159,21 @@ app.delete(
 
 //Review model Routes
 //post route
-app.post("/listings/:id/reviews", async (req, res) => {
-  //why async because we are going to data on database which is an asychronous process
-  let listing = await Listing.findById(req.params.id);
-  let newReview = new Review(req.body.review);
-  listing.reviews.push(newReview);
+app.post(
+  "/listings/:id/reviews",
+  validateSchema,
+  wrapAsync(async (req, res) => {
+    //why async because we are going to data on database which is an asychronous process
+    let listing = await Listing.findById(req.params.id);
+    let newReview = new Review(req.body.review);
+    listing.reviews.push(newReview);
 
-  await newReview.save();
-  await listing.save();
+    await newReview.save();
+    await listing.save();
 
-  res.redirect(`/listings/${listing._id}`);
-});
+    res.redirect(`/listings/${listing._id}`);
+  })
+);
 
 //sending standard response for * match all the routes above and if it didnot match then send response of page not found
 app.use((req, res, next) => {
