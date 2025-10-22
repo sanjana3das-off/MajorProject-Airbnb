@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 // creating a variable Schema so instead of using mongoose.Schema we will use Schema
-
+const Review = require("./review.js");
 const listingSchema = new Schema({
   title: {
     type: String,
@@ -32,7 +32,14 @@ const listingSchema = new Schema({
     },
   ],
 });
-
+// Post middleware: runs after a listing is deleted
+listingSchema.post("findOneAndDelete", async (listing) => {
+  // Only proceed if a listing was actually deleted
+  if (listing) {
+    // Delete all reviews whose IDs are in the deleted listing's 'reviews' array
+    await Review.deleteMany({ _id: { $in: listing.reviews } });
+  }
+});
 // now by using this schema we will create a model
 const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;
