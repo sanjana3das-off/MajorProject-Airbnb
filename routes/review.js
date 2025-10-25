@@ -1,6 +1,5 @@
 const express = require("express");
-const router = express.Router({ mergeParams: true }); //creating router object,// mergeParams: true lets this router use parameters from the parent route
-
+const router = express.Router({ mergeParams: true }); //creating router object,// mergeParams: true lets this router use parameters from the parent rou
 const wrapAsync = require("../utils/wrapAsync.js");
 const { reviewSchema } = require("../schema.js");
 const ExpressError = require("../utils/ExpressError.js");
@@ -29,7 +28,7 @@ router.post(
 
     await newReview.save();
     await listing.save();
-
+    req.flash("success", "New review created");
     res.redirect(`/listings/${listing._id}`);
   })
 );
@@ -41,6 +40,7 @@ router.delete(
 
     await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
+    req.flash("failure", "Review Deleted");
     res.redirect(`/listings/${id}`);
   })
 );
