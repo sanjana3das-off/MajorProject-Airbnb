@@ -11,13 +11,15 @@
     />
 
     <div class="card-body">
-      <p class="card-text"></p>
-      <p class="card-text mb-1"><%= listing.description %></p>
-      <p class="card-text mb-1">
-        &#8377; <%= listing.price.toLocaleString("en-IN") %>
+      <p class="card-text">
+        <p class="card-text mb-1">Owned By: <i><%=listing.owner.username%></i></p>
+        <p class="card-text mb-1"><%= listing.description %></p>
+        <p class="card-text mb-1">
+          &#8377; <%= listing.price.toLocaleString("en-IN") %>
+        </p>
+        <p class="card-text mb-1"><%= listing.location %></p>
+        <p class="card-text mb-0"><%= listing.country %></p>
       </p>
-      <p class="card-text mb-1"><%= listing.location %></p>
-      <p class="card-text mb-0"><%= listing.country %></p>
     </div>
   </div>
 </div>

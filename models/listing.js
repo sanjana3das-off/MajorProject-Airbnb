@@ -31,6 +31,10 @@ const listingSchema = new Schema({
       ref: "Reviews",
     },
   ],
+  owner: {
+    type: Schema.Types.ObjectId, //refereing to User model
+    ref: "user",
+  },
 });
 // Post middleware: runs after a listing is deleted
 listingSchema.post("findOneAndDelete", async (listing) => {
