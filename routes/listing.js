@@ -2,29 +2,10 @@ const express = require("express");
 const router = express.Router(); //creating router objet
 
 const wrapAsync = require("../utils/wrapAsync.js");
-const { listingSchema } = require("../schema.js");
-const ExpressError = require("../utils/ExpressError.js");
+
 const Listing = require("../models/listing.js");
-const { isLoggedIn } = require("../middleware.js");
+const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 
-//step3-Server side validation
-const validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-
-  if (error) {
-    // `error` is the object returned by Joi when validation fails
-    // It contains details about each validation failure in an array called `details`
-
-    // Map over each element in the error.details array
-    // `el` represents one validation error object
-    let errMsg = error.details
-      .map((el) => el.message) // extract the human-readable message from each error
-      .join(","); // join all messages into a single string, separated by commas
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
-  }
-};
 //index route
 router.get(
   "/",
@@ -73,6 +54,7 @@ router.post(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res, next) => {
     let { id } = req.params;
     const listing = await Listing.findById(id);
@@ -88,11 +70,9 @@ router.get(
 router.put(
   "/:id",
   isLoggedIn,
+  isOwner,
   validateListing,
   wrapAsync(async (req, res, next) => {
-    if (!req.body.listing) {
-      throw new ExpressError(400, "Send valid data for Title");
-    }
     let { id } = req.params;
     await Listing.findByIdAndUpdate(id, { ...req.body.listing });
     req.flash("success", "Listing Updated");
@@ -103,6 +83,7 @@ router.put(
 //delete route
 router.delete(
   "/:id",
+  isOwner,
   isLoggedIn,
   wrapAsync(async (req, res, next) => {
     let { id } = req.params;
